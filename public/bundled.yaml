@@ -12,92 +12,136 @@ tags:
     description: Task-related endpoints
 paths:
   /tasks:
-    /tasks:
-      get:
-        summary: List all tasks
-        tags:
-          - Tasks
-        parameters:
-          - name: completed
-            in: query
-            required: false
-            description: Filter tasks by completion status
-            schema:
-              type: boolean
-              example: true
-          - name: limit
-            in: query
-            required: false
-            description: Maximum number of tasks to return
-            schema:
-              type: integer
-              example: 10
-        responses:
-          '200':
-            description: OK
-            content:
-              application/json:
-                schema:
-                  type: array
-                  items:
-                    $ref: ../components/schemas/Task.yaml
-      post:
-        summary: Create a new task
-        tags:
-          - Tasks
-        requestBody:
-          required: true
+    get:
+      summary: List all tasks
+      tags:
+        - Tasks
+      parameters:
+        - name: completed
+          in: query
+          required: false
+          description: Filter tasks by completion status
+          schema:
+            type: boolean
+            example: true
+        - name: limit
+          in: query
+          required: false
+          description: Maximum number of tasks to return
+          schema:
+            type: integer
+            example: 10
+      responses:
+        '200':
+          description: OK
           content:
             application/json:
               schema:
-                $ref: ../components/schemas/NewTask.yaml
-        responses:
-          '201':
-            description: Task created successfully
-            content:
-              application/json:
-                schema:
-                  $ref: ../components/schemas/Task.yaml
-          '400':
-            $ref: ../components/responses/BadRequest.yaml
-    /tasks/{id}:
-      get:
-        summary: Get a task by ID
-        tags:
-          - Tasks
-        parameters:
-          - name: id
-            in: path
-            required: true
-            description: The unique ID of the task
+                type: array
+                items:
+                  $ref: '#/components/schemas/Task'
+    post:
+      summary: Create a new task
+      tags:
+        - Tasks
+      requestBody:
+        required: true
+        content:
+          application/json:
             schema:
-              type: integer
-              example: 123
-        responses:
-          '200':
-            description: Task retrieved successfully
-            content:
-              application/json:
-                schema:
-                  $ref: ../components/schemas/Task.yaml
-          '400':
-            description: Invalid input
-            content:
-              application/json:
-                schema:
-                  $ref: ../components/schemas/ValidationError.yaml
-                example:
-                  error: Validation failed
-                  details:
-                    - Task ID must be an integer
-          '404':
-            description: Task not found
-            content:
-              application/json:
-                schema:
-                  $ref: ../components/schemas/NotFoundError.yaml
-                example:
-                  error: Not Found
-                  details:
-                    - Task with ID 123 not found
-components: {}
+              $ref: '#/components/schemas/Task'
+      responses:
+        '201':
+          description: Task created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /tasks/{id}:
+    get:
+      summary: Get a task by ID
+      tags:
+        - Tasks
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique ID of the task
+          schema:
+            type: integer
+            example: 123
+      responses:
+        '200':
+          description: Task retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+              example:
+                error: Validation failed
+                details:
+                  - Task ID must be an integer
+        '404':
+          description: Task not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+              example:
+                error: Not Found
+                details:
+                  - Task with ID 123 not found
+components:
+  schemas:
+    Task:
+      type: object
+      properties:
+        id:
+          readOnly: true
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: Buy groceries
+        completed:
+          type: boolean
+          example: false
+    ValidationError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Validation failed
+        details:
+          type: array
+          items:
+            type: string
+    NotFoundError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Not Found
+        details:
+          type: array
+          items:
+            type: string
+          example:
+            - Resource not found
+      required:
+        - error
+  responses:
+    BadRequest:
+      description: Invalid input
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationError'
