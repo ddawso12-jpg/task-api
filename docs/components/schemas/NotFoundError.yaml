@@ -1,0 +1,13 @@
+type: object
+properties:
+  error:
+    type: string
+    example: "Not Found"
+  details:
+    type: array
+    items:
+      type: string
+    example:
+      - "Resource not found"
+required:
+  - error
